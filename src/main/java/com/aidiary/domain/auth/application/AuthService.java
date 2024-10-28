@@ -1,11 +1,7 @@
 package com.aidiary.domain.auth.application;
 
 import com.aidiary.domain.auth.dto.NicknameRes;
-import com.aidiary.domain.chatbot.domain.ChatHistory;
-import com.aidiary.domain.chatbot.domain.ChatRole;
-import com.aidiary.domain.chatbot.domain.Greeting;
-import com.aidiary.domain.chatbot.domain.repository.ChatHistoryRepository;
-import com.aidiary.domain.chatbot.domain.repository.GreetingRepository;
+
 import com.aidiary.domain.emotion.domain.EmotionStatistics;
 import com.aidiary.domain.emotion.domain.repository.EmotionStatisticsRepository;
 import com.aidiary.domain.user.domain.User;
@@ -27,8 +23,6 @@ import java.util.Optional;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final ChatHistoryRepository chatHistoryRepository;
-    private final GreetingRepository greetingRepository;
     private final EmotionStatisticsRepository emotionStatisticsRepository;
 
     @Transactional
@@ -78,19 +72,6 @@ public class AuthService {
                 .build();
 
         emotionStatisticsRepository.save(emotionStatistics);
-
-
-
-        Optional<Greeting> greeting = greetingRepository.findById(1L);
-
-        ChatHistory firstChatHistory = ChatHistory.builder()
-                .user(user)
-                .message(greeting.get().getInitialGreeting())
-                .chatRole(ChatRole.BOT)
-                .build();
-
-        chatHistoryRepository.save(firstChatHistory);
-
 
         NicknameRes nicknameRes = NicknameRes.builder()
                 .userid(user.getId())
