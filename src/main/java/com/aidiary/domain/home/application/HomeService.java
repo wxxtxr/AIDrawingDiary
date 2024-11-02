@@ -1,6 +1,7 @@
 package com.aidiary.domain.home.application;
 
 import com.aidiary.domain.diary.domain.repository.DiaryRepository;
+import com.aidiary.domain.diary.dto.DiaryDetailsRes;
 import com.aidiary.domain.home.dto.HomePageWrapperRes;
 import com.aidiary.domain.home.dto.HomeViewRes;
 import com.aidiary.domain.user.domain.User;
@@ -12,6 +13,8 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -25,21 +28,22 @@ public class HomeService {
 
     @Transactional
     public HomePageWrapperRes loadHomePage(UserPrincipal userPrincipal) {
+        LocalDate currentDate = LocalDate.now();
         User user = userRepository.findById(userPrincipal.getId())
                 .orElseThrow(EntityNotFoundException::new);
 
         List<HomeViewRes> bookmarkedDiary = diaryRepository.findBookmarkedDiary(userPrincipal.getId());
+        List<DiaryDetailsRes> recentMonthDiary = diaryRepository.findByUserIdWithYearAndMonth(user.getId(), currentDate.getYear(), currentDate.getMonthValue());
 
         String nickname = user.getNickname();
 
         int consecutiveWritingDays = diaryRepository.findConsecutiveWritingDays(userPrincipal.getId());
 
-        HomePageWrapperRes homePageWrapperRes = HomePageWrapperRes.builder()
+        return HomePageWrapperRes.builder()
                 .nickname(nickname)
                 .consecutiveWritingDays(consecutiveWritingDays)
                 .recentFiveDiaries(bookmarkedDiary)
+                .recentMonthDiaries(recentMonthDiary)
                 .build();
-
-        return homePageWrapperRes;
     }
 }
