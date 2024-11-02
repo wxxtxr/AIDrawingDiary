@@ -105,4 +105,61 @@ public class SummaryService {
 
         return contentToSummarize; // In case of failure, return the original content
     }
+
+
+     private void createImage(Diary diary) {
+        try {
+            String imageUrl = generateImageFromText(diary);
+            if (imageUrl != null) {
+                saveImage(imageUrl, "diary_image.png");
+                System.out.println("'diary_image.png'. 이름으로 이미지가 생성되었습니다.");
+            } else {
+                System.out.println("이미지 생성에 실패하였습니다.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void saveImage(String imageUrl, String filePath) throws Exception {
+        try (InputStream in = new URL(imageUrl).openStream()) {
+            Files.copy(in, Paths.get(filePath));
+        }
+    }
+
+
+    private  String generateImageFromText(Diary diary) throws Exception {
+        HttpClient client = HttpClient.newHttpClient();
+        String requestBody = "{ \"model\": \"dall-e-3\", \"prompt\": \"" + diary.getContent() + "\", \"n\": 1, \"size\": \"1024x1024\" }";
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(apiURL))
+                .header("Authorization", "Bearer " + "OPENAI_API_KEY")
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        int statusCode = response.statusCode();
+        System.out.println("HTTP Status Code: " + statusCode);
+        String responseBody = response.body();
+        System.out.println("Response Body: " + responseBody);
+
+        if (statusCode == 200) {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(responseBody);
+
+            if (rootNode.has("data") && rootNode.get("data").isArray()) {
+                return rootNode.get("data").get(0).get("url").asText();
+            } else {
+                System.out.println("No data field found in the response.");
+                return null;
+            }
+        } else {
+            System.out.println("Request failed with status code: " + statusCode);
+            return null;
+        }
+    }
 }
