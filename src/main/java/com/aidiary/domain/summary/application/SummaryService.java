@@ -2,13 +2,14 @@ package com.aidiary.domain.summary.application;
 
 import com.aidiary.domain.diary.domain.Diary;
 import com.aidiary.domain.diary.domain.repository.DiaryRepository;
-import com.aidiary.domain.emotion.dto.ChatGPTReq;
 import com.aidiary.domain.emotion.dto.ChatGPTReq2;
 import com.aidiary.domain.emotion.dto.ChatGPTRes;
 import com.aidiary.domain.summary.domain.DiarySummary;
 import com.aidiary.domain.summary.domain.repository.DiarySummaryRepository;
 import com.aidiary.domain.user.domain.User;
 import com.aidiary.domain.user.domain.repository.UserRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,8 +17,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
+
+
 
 @Service
 @Transactional(readOnly = true)

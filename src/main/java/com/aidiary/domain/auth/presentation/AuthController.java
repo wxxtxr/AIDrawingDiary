@@ -47,7 +47,6 @@ public class AuthController {
     })
     @PostMapping("/login")
     public ResponseCustom<AuthRes> login(@RequestBody IdTokenReq idTokenReq) {
-        System.out.println("idTokenReq = " + idTokenReq.idToken());
         String providerId = oidcProviderFactory.getProviderId(
                 Provider.valueOf(idTokenReq.provider().toUpperCase()), idTokenReq.idToken());
 
@@ -62,7 +61,6 @@ public class AuthController {
 
         User user = userRepository.findByProviderId(providerId)
                 .orElseThrow(EntityNotFoundException::new);
-
 
         AuthRes authRes = AuthRes.builder()
                 .accessToken(accessToken)
