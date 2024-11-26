@@ -3,6 +3,7 @@ package com.aidiary.domain.s3.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
@@ -15,6 +16,16 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+
+import java.net.URL;
+import java.time.Duration;
+
 
 @Service
 @RequiredArgsConstructor
@@ -37,5 +48,20 @@ public class S3Service {
 	private String createFileName() {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
 		return UUID.randomUUID() + "_" + LocalDateTime.now().format(formatter);
+	}
+
+	public String generatePresignedUrl(String bucketName, String objectKey, int durationInSeconds) {
+		try (S3Presigner presigner = S3Presigner.create()) {
+			GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+					.bucket(bucketName)
+					.key(objectKey)
+					.build();
+			GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+					.signatureDuration(Duration.ofSeconds(durationInSeconds))
+					.getObjectRequest(getObjectRequest)
+					.build();
+			URL presignedUrl = presigner.presignGetObject(presignRequest).url();
+			return presignedUrl.toString();
+		}
 	}
 }
