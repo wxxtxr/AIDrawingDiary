@@ -5,6 +5,7 @@ import com.aidiary.domain.diary.domain.Diary;
 import com.aidiary.domain.diary.domain.repository.DiaryRepository;
 import com.aidiary.domain.diary.dto.*;
 import com.aidiary.domain.diary.dto.condition.DiariesSearchCondition;
+import com.aidiary.domain.s3.service.S3Service;
 import com.aidiary.domain.user.domain.User;
 import com.aidiary.domain.user.domain.repository.UserRepository;
 import com.aidiary.global.config.security.token.UserPrincipal;
@@ -38,6 +39,7 @@ public class DiaryService {
     private final UserRepository userRepository;
     private final DiaryRepository diaryRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final S3Service s3Service;
 
     @Value("${openai.api.url}")
     private String apiURL;
@@ -59,6 +61,7 @@ public class DiaryService {
                 .id(diary.getId())
                 .content(diary.getContent())
                 .diaryEntryDate(diary.getDiaryEntryDate())
+                .url(createImage(diary.getContent()))
                 .build();
 
         return createDiaryRes;
@@ -146,31 +149,35 @@ public class DiaryService {
         return diaryRepository.findByUserIdWithYearAndMonth(user.getId(), year, month);
     }
 
-    private void createImage(CreateImageReq diary) {
+    public String createImage(String content) {
         try {
-            String imageUrl = generateImageFromText(diary);
+            String imageUrl = generateImageFromText(content);
             if (imageUrl != null) {
-                saveImage(imageUrl, "diary_image.png");
+//                saveImage(imageUrl, "diary_image.png");
+                s3Service.upload(imageUrl);
                 System.out.println("'diary_image.png'. 이름으로 이미지가 생성되었습니다.");
+                return imageUrl;
             } else {
                 System.out.println("이미지 생성에 실패하였습니다.");
+                return null;
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
     }
 
 
-    private void saveImage(String imageUrl, String filePath) throws Exception {
-        try (InputStream in = new URL(imageUrl).openStream()) {
-            Files.copy(in, Paths.get(filePath));
-        }
-    }
+//    private void saveImage(String imageUrl, String filePath) throws Exception {
+//        try (InputStream in = new URL(imageUrl).openStream()) {
+//            Files.copy(in, Paths.get(filePath));
+//        }
+//    }
 
 
-    private  String generateImageFromText(CreateImageReq diary) throws Exception {
+    private  String generateImageFromText(String content) throws Exception {
         HttpClient client = HttpClient.newHttpClient();
-        String requestBody = "{ \"model\": \"dall-e-3\", \"prompt\": \"" + diary.content() + "\", \"n\": 1, \"size\": \"1024x1024\" }";
+        String requestBody = "{ \"model\": \"dall-e-3\", \"prompt\": \"" + content + "\", \"n\": 1, \"size\": \"1024x1024\" }";
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(apiURL))

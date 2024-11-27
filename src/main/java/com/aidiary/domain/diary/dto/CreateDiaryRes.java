@@ -8,6 +8,8 @@ import java.time.LocalDate;
 public record CreateDiaryRes(
         Long id,
         String content,
-        LocalDate diaryEntryDate
+        LocalDate diaryEntryDate,
+
+        String url
 ) {
 }
