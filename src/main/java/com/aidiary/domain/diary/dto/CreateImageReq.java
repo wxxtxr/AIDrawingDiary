@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record CreateImageReq (
-        Long id,
+        String id,
         String content
 )
 {}

@@ -53,6 +53,7 @@ public class DiaryService {
                 .user(user)
                 .content(createDiaryReq.content())
                 .diaryEntryDate(createDiaryReq.diaryEntryDate())
+                .url(createImage(createDiaryReq.content()))
                 .build();
 
         diaryRepository.save(diary);
@@ -61,8 +62,9 @@ public class DiaryService {
                 .id(diary.getId())
                 .content(diary.getContent())
                 .diaryEntryDate(diary.getDiaryEntryDate())
-                .url(createImage(diary.getContent()))
+                .url(diary.getUrl())
                 .build();
+
 
         return createDiaryRes;
     }

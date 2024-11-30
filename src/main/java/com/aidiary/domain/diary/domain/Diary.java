@@ -39,12 +39,16 @@ public class Diary extends BaseEntity {
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bookmark> bookmark = new ArrayList<>();
 
+    @Column(name = "url")
+    private String url;
+
 
     @Builder
-    public Diary(User user, String content, LocalDate diaryEntryDate) {
+    public Diary(User user, String content, LocalDate diaryEntryDate, String url) {
         this.user = user;
         this.content = content;
         this.diaryEntryDate = diaryEntryDate;
+        this.url = url;
     }
 
     public void updateContent(String content) {
