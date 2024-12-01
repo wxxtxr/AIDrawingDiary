@@ -1,5 +1,6 @@
 package com.aidiary.domain.s3.service;
 
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +55,14 @@ public class S3Service {
 					.build();
 			URL presignedUrl = presigner.presignGetObject(presignRequest).url();
 			return presignedUrl.toString();
+		}
+	}
+
+	public void delete(String objectKey) {
+		try {
+			s3Client.deleteObject(bucket, objectKey);
+		} catch (SdkClientException e) {
+			throw new IllegalStateException("[Error] AWS S3 서비스 접근에 실패했습니다.");
 		}
 	}
 }

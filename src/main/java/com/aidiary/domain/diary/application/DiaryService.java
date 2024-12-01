@@ -41,8 +41,11 @@ public class DiaryService {
     private final BookmarkRepository bookmarkRepository;
     private final S3Service s3Service;
 
-    @Value("${openai.api.url}")
+    @Value("${openai.api.image}")
     private String apiURL;
+
+    @Value("${openai.api.key}")
+    private String apiKey;
 
     @Transactional
     public CreateDiaryRes writeDiary(UserPrincipal userPrincipal, CreateDiaryReq createDiaryReq) {
@@ -111,6 +114,7 @@ public class DiaryService {
 
             bookmarkRepository.deleteAllByDiary(diary);
             diaryRepository.delete(diary);
+            s3Service.delete(diary.getUrl());
 
             return Message.builder()
                     .message("일기를 삭제하였습니다.")
@@ -156,9 +160,9 @@ public class DiaryService {
             String imageUrl = generateImageFromText(content);
             if (imageUrl != null) {
 //                saveImage(imageUrl, "diary_image.png");
-                s3Service.upload(imageUrl);
-                System.out.println("'diary_image.png'. 이름으로 이미지가 생성되었습니다.");
-                return imageUrl;
+                String objectKey = s3Service.upload(imageUrl);
+                System.out.println(objectKey + " 이름으로 이미지가 생성되었습니다.");
+                return objectKey;
             } else {
                 System.out.println("이미지 생성에 실패하였습니다.");
                 return null;
@@ -183,7 +187,7 @@ public class DiaryService {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(apiURL))
-                .header("Authorization", "Bearer " + "OPENAI_API_KEY")
+                .header("Authorization", "Bearer " + apiKey)
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                 .build();
