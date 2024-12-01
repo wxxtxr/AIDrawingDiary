@@ -65,6 +65,7 @@ public class DiaryController {
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
             @Parameter(description = "조회할 일기의 id를 입력해주세요.", required = true) @PathVariable Long diaryId
     ) throws AccessDeniedException {
+        System.out.println("asdasdasdsad");
         return ResponseCustom.OK(diaryService.viewDiary(userPrincipal, diaryId));
     }
 

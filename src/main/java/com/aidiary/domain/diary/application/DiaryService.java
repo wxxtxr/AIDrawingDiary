@@ -47,6 +47,9 @@ public class DiaryService {
     @Value("${openai.api.key}")
     private String apiKey;
 
+    @Value("${aws.s3.url}")
+    private String s3;
+
     @Transactional
     public CreateDiaryRes writeDiary(UserPrincipal userPrincipal, CreateDiaryReq createDiaryReq) {
 
@@ -56,7 +59,7 @@ public class DiaryService {
                 .user(user)
                 .content(createDiaryReq.content())
                 .diaryEntryDate(createDiaryReq.diaryEntryDate())
-                .url(createImage(createDiaryReq.content()))
+                .url(s3+"/"+createImage(createDiaryReq.content()))
                 .build();
 
         diaryRepository.save(diary);
@@ -125,17 +128,14 @@ public class DiaryService {
     public DiaryDetailsRes viewDiary(UserPrincipal userPrincipal, Long diaryId) throws AccessDeniedException {
         User user = userRepository.findById(userPrincipal.getId())
                 .orElseThrow(EntityNotFoundException::new);
-
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(EntityNotFoundException::new);
-
         if (!diary.getUser().equals(user)) {
             throw new AccessDeniedException("해당 일기에 접근 권한이 없습니다.");
         }
 
 
         DiaryDetailsRes oneByUserIdAndDiaryId = diaryRepository.findOneByUserIdAndDiaryId(userPrincipal.getId(), diaryId);
-
         return oneByUserIdAndDiaryId;
 
     }
