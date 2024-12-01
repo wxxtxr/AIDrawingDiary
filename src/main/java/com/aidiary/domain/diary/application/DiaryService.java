@@ -87,7 +87,7 @@ public class DiaryService {
         if (user.getId().equals(diary.getUser().getId())) {
             s3Service.delete(diary.getUrl());
             diary.updateContent(editDiaryReq.content());
-            diary.updateUrl(createImage(editDiaryReq.content()));
+            diary.updateUrl(s3+"/"+createImage(editDiaryReq.content()));
 
             EditDiaryRes editDiaryRes = EditDiaryRes.builder()
                     .userId(user.getId())
