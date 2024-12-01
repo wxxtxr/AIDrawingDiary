@@ -38,8 +38,9 @@ public class JWTFilter extends OncePerRequestFilter {
 
             if (StringUtils.hasText(accessToken) && jwtUtil.validateToken(accessToken)) {
                 String email = jwtUtil.getEmail(accessToken);
+                System.out.println(email);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-
+                System.out.println(userDetails);
                 UserPrincipal userPrincipal = (UserPrincipal) userDetails;
                 Authentication authToken = new UsernamePasswordAuthenticationToken(userPrincipal, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authToken);
@@ -52,6 +53,7 @@ public class JWTFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             PrintWriter writer = response.getWriter();
+            System.out.println(e.getCause());
             writer.print("Invalid access token");
             return;
         }

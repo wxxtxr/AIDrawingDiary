@@ -9,7 +9,6 @@ public record CreateDiaryRes(
         Long id,
         String content,
         LocalDate diaryEntryDate,
-
         String url
 ) {
 }

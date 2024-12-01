@@ -2,7 +2,6 @@ package com.aidiary.domain.home.presentation;
 
 import com.aidiary.domain.home.application.HomeService;
 import com.aidiary.domain.home.dto.HomePageWrapperRes;
-import com.aidiary.domain.home.dto.HomeViewRes;
 import com.aidiary.global.config.security.token.CurrentUser;
 import com.aidiary.global.config.security.token.UserPrincipal;
 import com.aidiary.global.payload.ErrorResponse;
@@ -18,8 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @Tag(name = "Home", description = "Home API")
 @RestController

@@ -30,11 +30,10 @@ public class AuthService {
 
         DecodedJWT decodedJWT = JWT.decode(idToken);
         String providerId = decodedJWT.getSubject();  // 사용자 고유 ID (sub)
-        String email = decodedJWT.getClaim("email").asString();
+        String email = "zidwkd00@naver.com";
         String username = decodedJWT.getClaim("nickname").asString();
 
         Optional<User> optionalUser = userRepository.findByProviderAndProviderId(provider, providerId);
-
         if (optionalUser.isPresent()) {
             return optionalUser.get();
         } else {
@@ -48,6 +47,7 @@ public class AuthService {
     public String findEmail(String providerId) {
         User user = userRepository.findByProviderId(providerId)
                 .orElseThrow(EntityNotFoundException::new);
+        System.out.println(user.getId()+" "+ user.getRole()+" "+user.getEmail());
         return user.getEmail();
     }
 

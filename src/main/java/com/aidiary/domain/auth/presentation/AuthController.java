@@ -55,8 +55,9 @@ public class AuthController {
         }
 
         authService.findOrCreateUser(idTokenReq.provider(), idTokenReq.idToken());
+        System.out.println("====================start");
         String email = authService.findEmail(providerId);
-
+        System.out.println(email);
         String accessToken = jwtUtil.createJwt("access", providerId, "ROLE_USER", 3600000L, email);
 
         User user = userRepository.findByProviderId(providerId)

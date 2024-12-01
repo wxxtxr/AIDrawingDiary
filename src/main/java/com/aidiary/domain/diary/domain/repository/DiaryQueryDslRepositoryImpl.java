@@ -1,7 +1,5 @@
 package com.aidiary.domain.diary.domain.repository;
 
-import com.aidiary.domain.bookmark.domain.QBookmark;
-import com.aidiary.domain.diary.domain.Diary;
 import com.aidiary.domain.diary.dto.DiaryDetailsRes;
 import com.aidiary.domain.diary.dto.QDiaryDetailsRes;
 import com.aidiary.domain.diary.dto.QSearchDiariesRes;
@@ -190,6 +188,7 @@ public class DiaryQueryDslRepositoryImpl implements DiaryQueryDslRepository {
                         diary.content,
                         diary.diaryEntryDate,
                         diary.emotion,
+                        diary.url,
                         bookmark.id.isNotNull()
                 ))
                 .from(diary)
@@ -213,8 +212,8 @@ public class DiaryQueryDslRepositoryImpl implements DiaryQueryDslRepository {
                         diary.content,
                         diary.diaryEntryDate,
                         diary.emotion,
-                        bookmark.id.isNotNull()
-                        ))
+                        diary.url,
+                        bookmark.id.isNotNull()))
                 .from(diary)
                 .leftJoin(bookmark).on(diary.id.eq(bookmark.diary.id))
                 .where(diary.user.id.eq(userId),
