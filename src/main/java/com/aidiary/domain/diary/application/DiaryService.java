@@ -80,14 +80,18 @@ public class DiaryService {
         Diary diary = diaryRepository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
 
+
         if (user.getId().equals(diary.getUser().getId())) {
+            s3Service.delete(diary.getUrl());
             diary.updateContent(editDiaryReq.content());
+            diary.updateUrl(createImage(editDiaryReq.content()));
 
             EditDiaryRes editDiaryRes = EditDiaryRes.builder()
                     .userId(user.getId())
                     .DiaryId(diary.getId())
                     .content(editDiaryReq.content())
                     .diaryEntryDate(diary.getDiaryEntryDate())
+                    .url(diary.getUrl())
                     .build();
 
             return editDiaryRes;
