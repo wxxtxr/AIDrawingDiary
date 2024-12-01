@@ -9,6 +9,7 @@ public record EditDiaryRes(
         Long userId,
         Long DiaryId,
         String content,
-        LocalDate diaryEntryDate
+        LocalDate diaryEntryDate,
+        String url
 ) {
 }

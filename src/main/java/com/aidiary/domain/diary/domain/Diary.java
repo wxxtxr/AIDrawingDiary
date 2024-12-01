@@ -55,6 +55,8 @@ public class Diary extends BaseEntity {
         this.content = content;
     }
 
+    public void updateUrl(String url) {this.url = url;}
+
     public void updateDiaryEntryDate(LocalDate diaryEntryDate) {
         this.diaryEntryDate = diaryEntryDate;
     }
